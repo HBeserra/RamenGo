@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: ramenGO!
+  description: This API allows users to list available broths, available proteins and place an order.
+  version: 1.0.0
+servers:
+  - url: https://localhost:3000
+paths:
+  /broths:
+    get:
+      summary: List all available broths
+      operationId: listBroths
+      parameters:
+        - in: header
+          name: x-api-key
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of broths
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1"
+                    imageInactive:
+                      type: string
+                      example: "https://tech.redventures.com.br/icons/salt/inactive.svg"
+                    imageActive:
+                      type: string
+                      example: "https://tech.redventures.com.br/icons/salt/active.svg"
+                    name:
+                      type: string
+                      example: "Salt"
+                    description:
+                      type: string
+                      example: "Simple like the seawater, nothing more"
+                    price:
+                      type: number
+                      example: 10
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "x-api-key header missing"
+  /proteins:
+    get:
+      summary: List all available proteins
+      operationId: listProteins
+      parameters:
+        - in: header
+          name: x-api-key
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of proteins
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1"
+                    imageInactive:
+                      type: string
+                      example: "https://tech.redventures.com.br/icons/pork/inactive.svg"
+                    imageActive:
+                      type: string
+                      example: "https://tech.redventures.com.br/icons/pork/active.svg"
+                    name:
+                      type: string
+                      example: "Chasu"
+                    description:
+                      type: string
+                      example: "A sliced flavourful pork meat with a selection of season vegetables."
+                    price:
+                      type: number
+                      example: 10
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "x-api-key header missing"
+  /orders:
+    post:
+      summary: Place an order
+      operationId: placeOrder
+      parameters:
+        - in: header
+          name: x-api-key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brothId:
+                  type: string
+                  example: "1"
+                proteinId:
+                  type: string
+                  example: "1"
+      responses:
+        '201':
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "12345"
+                  description:
+                    type: string
+                    example: "Salt and Chasu Ramen"
+                  image:
+                    type: string
+                    example: "https://tech.redventures.com.br/icons/ramen/ramenChasu.png"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "both brothId and proteinId are required"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "x-api-key header missing"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "could not place order"
+components:
+  schemas:
+    Broth:
+      type: object
+      properties:
+        id:
+          type: string
+        imageInactive:
+          type: string
+        imageActive:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+    Protein:
+      type: object
+      properties:
+        id:
+          type: string
+        imageInactive:
+          type: string
+        imageActive:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+    OrderRequest:
+      type: object
+      properties:
+        brothId:
+          type: string
+        proteinId:
+          type: string
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
