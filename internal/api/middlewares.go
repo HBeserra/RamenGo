@@ -1,6 +1,10 @@
 package api
 
-import "net/http"
+import (
+	"log/slog"
+	"net/http"
+	"os"
+)
 
 // ValidateXAPIKeyMiddleware checks if the provided API key is valid
 func ValidateXAPIKeyMiddleware(next http.Handler) http.Handler {
@@ -23,11 +27,22 @@ func ValidateXAPIKeyMiddleware(next http.Handler) http.Handler {
 
 // CorsMiddleware adds CORS headers to the response
 func CorsMiddleware(next http.Handler) http.Handler {
+
+	allowOrigin := os.Getenv("ALLOWED_ORIGIN")
+	if allowOrigin == "" {
+		allowOrigin = "*"
+	}
+
+	slog.Info("CorsMiddleware", "allowOrigins", allowOrigin)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		slog.Info("Request", "req.host", r.Host)
+
+		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		next.ServeHTTP(w, r)
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key")
+		// next.ServeHTTP(w, r)
 	})
 }
 

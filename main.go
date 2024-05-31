@@ -20,10 +20,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /broths", http.HandlerFunc(handleListBroths))
-
 	// add the middleware to every request
 	wrappedMux := api.UseMiddleware(mux, api.CorsMiddleware, api.ValidateXAPIKeyMiddleware)
+	mux.Handle("GET /broths", http.HandlerFunc(handleListBroths))
 
 	port := os.Getenv("PORT")
 	if port == "" {
